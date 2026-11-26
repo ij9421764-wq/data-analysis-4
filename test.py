@@ -32,4 +32,11 @@ with open(LOT, encoding="utf-8-sig") as f:
     header = next(r)  # 첫 줄은 열 이름이라 따로 꺼냄
     rows = list(r)  # 나머지 줄이 데이터
 
+# [['09:00', '로트A', '861.9', '42.9', '0.451', '정상'],  ...
+# 2차원임
 print(rows)
+
+# [861.9, 858.4, 858.7, 860.7, ...
+# 1차원임
+temps = [float(row[2]) for row in rows]
+print(temps)
