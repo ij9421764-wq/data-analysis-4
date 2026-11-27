@@ -73,9 +73,11 @@ print("[실습 1] 파일을 열고 세어 봅니다")
 
 # TODO ① 행 수와 열 수를 찍으세요
 print("행 : ", len(rows), "열 : ", len(header))
+print()
 
 # TODO ② 열 이름 목록을 찍으세요
 print("열 이름 목록 : ", header)
+print()
 
 # TODO ③ 라인·result 를 종류별로 세고 합을 검산하세요
 
@@ -84,6 +86,8 @@ result_kinds = {}
 for row in rows:
     line_kinds[row[-2]] = line_kinds.get(row[-2], 0) + 1
     result_kinds[row[-1]] = result_kinds.get(row[-1], 0) + 1
+
+# ***종류별로 센 합이 전체와 같은지 체크하기
 print(
     "라인 : ",
     line_kinds,
@@ -93,8 +97,10 @@ print(
     sum(line_kinds.values()),
     sum(result_kinds.values()),
 )
+print()
 
 # TODO ④ 빈 칸이 있는 열만 골라 찍고 합계도 찍으세요
+# ***빈칸 확인하기
 total = 0
 for i in range(len(header)):
     blank = 0
@@ -102,9 +108,10 @@ for i in range(len(header)):
         if row[i] == "":
             blank += 1
     if blank > 0:
-        print(f"빈 칸 {blank:>2}개 - {header[i]}")
+        print(f"{header[i]} : {blank:>2}개")
         total += blank
 print("합계 : ", total, "칸")
+print()
 
 # =====================================================================
 # 실습 2 — 다섯 숫자로 120줄을 요약합니다
@@ -147,6 +154,7 @@ print("[실습 2] 다섯 숫자로 120줄을 요약합니다")
 # TODO ① 1존 온도를 숫자 리스트(z1)로 만들고 개수·앞 3개·뒤 3개를 찍으세요
 temps_zone_1 = [float(row[1]) for row in rows]
 print("개수 : ", len(temps_zone_1), "앞 3개 : ", temps_zone_1[:3])
+print()
 
 # TODO ② 합계·평균·평균(둘째 자리)·최대·최소·범위를 찍으세요
 zone1_sum = sum(temps_zone_1)
@@ -154,6 +162,7 @@ avg = sum(temps_zone_1) / len(temps_zone_1)
 top = max(temps_zone_1)
 low = min(temps_zone_1)
 span = top - low
+
 print(
     "합계 : ",
     round(zone1_sum, 1),
@@ -168,10 +177,14 @@ print(
     "범위 : ",
     round(span, 1),
 )
+print()
+
 # TODO ③ f-string 으로 칸 폭을 맞춘 한 줄 표를 찍으세요
 print(
     f"{'소입로온도1존':<10}{len(temps_zone_1):>5}{round(avg, 2):>10}{top:>10}{low:>10}{span:>8}"
 )
+print()
+
 # =====================================================================
 # 실습 3 — 평균만으로는 모릅니다 (흔들림)
 # =====================================================================
@@ -216,6 +229,7 @@ list2 = [0, 0, 0, 2, 3]
 
 list1_m = sum(list1) / len(list1)
 list2_m = sum(list2) / len(list2)
+# *** 평균뿐만 아니라 흔들림(= 평균절대편차) 확인하기
 print(
     "조용한 쪽 평균 : ",
     list1_m,
@@ -229,17 +243,20 @@ print(
     "흔들림 : ",
     round(sum(abs(x - list2_m) for x in list2) / len(list2), 1),
 )
+print()
 
 # TODO ② 1존 온도의 가장 먼 거리와 흔들림(spread)을 찍으세요
 
 gaps = [abs(t - avg) for t in temps_zone_1]
 spread = sum(gaps) / len(gaps)
-print("평균에서 떨어진 거리 중 가장 먼 것 : ", round(max(gaps), 2))
-print("평균에서 떨어진 거리의 평균 : ", round(spread, 2))
+print("가장 먼 것 : ", round(max(gaps), 2), " / 흔들림: ", round(spread, 2))
+print()
 
 # TODO ③ 흔들림보다 멀리 떨어진 줄이 몇 줄인지 찍으세요
-far_count = [row for row in rows if abs(float(row[1]) - avg) > spread]
+# *** 흔들림(= 평균절대편차)보다 멀리 떨어진 것 확인
+far_count = [temp for temp in temps_zone_1 if abs(temp - avg) > spread]
 print(len(far_count), "줄")
+print()
 
 # =====================================================================
 # 실습 4 — 함수로 만들어 라인별로 비교합니다
@@ -288,6 +305,7 @@ print("[실습 4] 함수로 만들어 라인별로 비교합니다")
 
 
 # TODO ① stat() 함수를 만들고 1존 온도 전체로 찍으세요
+# *** 함수 생성
 def stat(values):
     m = sum(values) / len(values)
     top = max(values)
@@ -304,12 +322,22 @@ def stat(values):
     }
 
 
-print("전체 : ", stat([float(row[1]) for row in rows]))
+print("전체 : ", stat(temps_zone_1))
+print()
 
 
 # TODO ② 주간·야간으로 나눠 각각 찍으세요
+# *** 해당 값들로 나눠서 출력
+# 주간, 야간 평균, 흔들림 비교
+# 주간
+#   평균 : 859.47, 흔들림 : 1.47
+# 야간
+#   평균 : 858.89, 흔들림 : 2.12
+# 평균 차이 : 0.58, 흔들림 차이 : 0.65
+# 야간 문제 X, 야간 흔들림이 큰 이유 없음 → 야간 라인의 흔들림이 더 큼까지 얻을 수 있는 정보임
 for line in ("주간", "야간"):
     print(line, ":", stat([float(row[1]) for row in rows if row[6] == line]))
+print()
 
 # TODO ③ 줄 수 검산과, 이름을 잘못 적었을 때의 줄 수를 찍으세요
 print(
@@ -317,13 +345,22 @@ print(
     + len([row for row in rows if row[6] == "야간"])
 )
 
-for line in ("주 간", "야간"):
-    line_rows = [row for row in rows if row[1] == line]
+for line in ("주 간", "야 간"):
+    line_rows = [row for row in rows if row[6] == line]
     print(f"{line}: {len(line_rows)}줄")
+print()
 
 # TODO ④ result 정상·이상으로도 나눠 찍으세요
+# *** 정상, 이상 평균, 흔들림 비교
+# 정상
+#   개수 : 109, 평균 : 859.41, 흔들림 : 1.32
+# 이상
+#   개수 : 11, 평균 : 856.91, 흔들림 : 4.96
+# 평균 : '이상'이 '정상'에 비해 '2.5' 낮음 → '평균'만 보면 안되는 이유를 잘 보여줌
+# 흔들림 : '이상'이 정상에 비해 '3.64' 높음
 for result in ("정상", "이상"):
     print(result, ":", stat([float(row[1]) for row in rows if row[7] == result]))
+print()
 
 
 # =====================================================================
@@ -369,6 +406,14 @@ print("[실습 5] 라벨을 보지 않고 수상한 줄 찾기")
 
 # TODO ①② 흔들림 2배·3배 초과인 줄을 찾아 건수와 줄 내용을 찍으세요
 
+print("*" * 30)
+
+# *** 흔들림 n배 초과 줄 찾기
+# 전체 이상 :  11건
+# 흔들림 2배 초과 : 19건 → 11건은 이상, 8건 정상인데 걸림(거짓 경보)
+# 흔들림 3배 초과 : 6건 → 6건은 이상, 5건 이상인데 넘어감
+# 어느 쪽이 더 비싼지는 데이터가 아니라 현장이 정함
+
 for k in (2, 3):
     far = [row for row in rows if abs(float(row[1]) - avg) > k * spread]
     print(f"흔들림 {k}배 초과 : {len(far)}건")
@@ -376,23 +421,29 @@ for k in (2, 3):
         print(
             f"측정시각 {row[0]:>4}  온도 {row[1]:>7}  평균과 차이 {round(float(row[1]) - avg, 2):>7}  result={row[7]}"
         )
+    print("*" * 30)
+print()
+
 # TODO ③ 2배 초과 중 result 이상 건수와, 전체 이상의 몇 %인지 찍으세요
+
 far = [row for row in rows if abs(float(row[1]) - avg) > 2 * spread]
 
 print(
-    "2배 초과 중 result 이상 : ",
+    len(far),
+    "건 중 result 이상 : ",
     len([row for row in far if row[7] == "이상"]),
-    "전체 이상 : ",
+    "/ 전체 이상 : ",
     len([row for row in rows if row[7] == "이상"]),
-    "비율 : ",
+    "건의 ",
     round(
         len([row for row in far if row[7] == "이상"])
         / len([row for row in rows if row[7] == "이상"])
         * 100,
         1,
     ),
-    "%",
+    "%를 잡았습니다.",
 )
+print()
 
 # =====================================================================
 # 실습 6 — 두 열이 같이 움직이나
@@ -426,6 +477,7 @@ print(
 #  ─────────────────────────────────────────────────────────────────
 #
 # [결과 해석] 0.452 와 0.442. 차이가 0.01 입니다. ★작습니다.
+# *** 아래 값의 차이와 함께 보기
 #   "온도가 높을 때 CP값도 조금 높다" 까지는 말할 수 있습니다.
 #   ★ 여기서 멈추세요. 세 가지를 하면 안 됩니다 —
 #     1) "온도가 CP값을 올린다" — 같이 움직이는 것과 원인은 다릅니다
@@ -437,11 +489,14 @@ print("=" * 60)
 print("[실습 6] 두 열이 같이 움직이나")
 
 # TODO ① (1존 온도, CP값) 짝을 만들어 온도 큰 순으로 세우고, 쌍 개수와 빠진 줄을 찍으세요
+print()
 
+# *** 빈 칸 제외 짝 만들기
 pairs = sorted(
     ((float(row[1]), float(row[3])) for row in rows if row[3] != ""), reverse=True
 )
 print("쌍 : ", len(pairs), "빠진 줄 : ", len(rows) - len(pairs))
+print()
 
 # TODO ② 상위 5줄·하위 5줄과 각각의 CP값 평균을 찍으세요
 
@@ -451,8 +506,9 @@ cold = pairs[-5:]
 hot_m = round(sum(p[1] for p in hot) / len(hot), 3)
 cold_m = round(sum(p[1] for p in cold) / len(cold), 3)
 
-print("상위 5줄의 CP값 평균 : ", hot_m)
-print("하위 5줄의 CP값 평균 : ", cold_m)
+print("상위 5줄의 CP값 평균 : ", hot_m)  # 0.452
+print("하위 5줄의 CP값 평균 : ", cold_m)  # 0.442
+print()
 
 # TODO ③ 두 평균의 차이를 찍으세요
 
@@ -460,6 +516,8 @@ print(
     "차이 : ",
     round(hot_m - cold_m, 2),
 )
+print()
+
 
 # =====================================================================
 # 실습 7 — 빈 칸이 섞인 열에서 평균 내기   ★오늘의 핵심
@@ -518,6 +576,8 @@ print("=" * 60)
 print("[실습 7] 빈 칸이 섞인 열에서 평균 내기")
 
 # TODO ① 그냥 평균을 내 보고, 터지는 오류를 try / except 로 받아 찍으세요
+print()
+# *** 빈칸 존재 → 계산 시 오류 → try/cxcept로 받기
 try:
     op = [float(row[4]) for row in rows]
     print()
@@ -526,25 +586,35 @@ except ValueError as e:
     print("ValueError : ", e)
 
 # TODO ② 빈 칸을 건너뛰고 평균을 내고, 개수와 평균을 같이 찍으세요
+print()
+# *** 빈 칸 제외하고 계산 → 74.96
 op_skip = [float(row[4]) for row in rows if row[4] != ""]
 op_skip_m = round(sum(op_skip) / len(op_skip), 2)
 print(
     len(op_skip),
-    "개로 / 평균 : ",
+    "개로 평균 : ",
     op_skip_m,
 )
 
 # TODO ③ 빈 칸을 0.0 으로 채우고 평균을 내고, 개수와 평균을 같이 찍으세요
+print()
+
+# *** 빈 칸을 0으로 변경하고 계산 → 71.21
 op_zero = [float(row[4]) if row[4] != "" else 0.0 for row in rows]
 op_zero_m = round(sum(op_zero) / len(op_zero), 2)
 print(
     len(op_zero),
-    "개로 / 평균 : ",
+    "개로 평균 : ",
     op_zero_m,
 )
 
 # TODO ④ 두 평균의 차이와 검산 두 줄을 찍으세요
+print()
 
+# *** 두 평균의 차이 = 3.75
+# 설비가 이상할 때만 보통은 0으로 채우지 않고 빼는 쪽이 정답
+# 빠진 이유를 모르면 빼는 것도 안전하지 않음
+# 무엇을 어떻게 했는지 보고서에 작성하는 것이 가장 좋음(빈칸 제외든 0으로 채우든)
 print("두 평균의 차이 : ", round(op_skip_m - op_zero_m, 2))
 print("검산 1 : ", len(op_skip), "+", len(op_zero) - len(op_skip), "=", len(op_zero))
 print(
@@ -557,6 +627,7 @@ print(
     "=",
     round(op_skip_m * (len(op_zero) - len(op_skip)) / len(op_zero), 2),
 )
+print()
 
 # =====================================================================
 # 실습 8 — 세 줄 보고서
@@ -581,6 +652,7 @@ print(
 #   숫자를 ★손으로 베껴 적지 마세요. 데이터가 바뀌면 보고서가 거짓말이 됩니다.
 #  ─────────────────────────────────────────────────────────────────
 #
+# *** 정리
 # [결과 해석] 5번 줄이 ★가장 중요합니다.
 #   OP값이 무엇인지 우리는 모릅니다. 이걸 "아마 출력값일 것이다" 로 적으면
 #   보고서 ★전체의 신뢰가 깨집니다. 모르는 건 "확인하지 못했다" 로 적고 물어봅니다.

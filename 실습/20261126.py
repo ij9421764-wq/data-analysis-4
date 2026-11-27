@@ -79,6 +79,8 @@ print("=" * 60)
 print("[실습 1] 파일을 배열로 읽고 크기부터 셉니다")
 
 # TODO ① 파일을 통째로 full 로 읽고 shape·ndim·size·dtype 과 검산을 찍으세요
+print()
+# 해당 파일(16_welding.csv)에는 현재 전부 정수 → loadtxt는 따로 지정하지 않으면 소수로 읽음(아래 '판정' 결과로 확인 가능)
 full = np.loadtxt(WELD, delimiter=",", skiprows=1, encoding="utf-8-sig")
 
 print(
@@ -86,6 +88,7 @@ print(
 )
 
 # TODO ② 앞 3줄을 찍고, 지수 표기를 끈 뒤 다시 찍으세요
+print()
 
 print("앞 3줄 : ", full[:3])
 
@@ -93,19 +96,23 @@ np.set_printoptions(suppress=True)
 print(full[:3])
 
 # TODO ③ 열 이름(head)을 csv 로 읽어 찍으세요
+print()
+
 with open(WELD, encoding="utf-8-sig") as f:
     head = next(csv.reader(f))
-print("    열 이름:", head)
+print("열 이름:", head)
 
 # TODO ④ 판정 열(lab)의 종류와 값마다 줄 수, 합 검산을 찍으세요
+print()
 
+# *** 열 종류
 print(
-    "    판정 열 종류:",
+    "판정 열 종류:",
     np.unique(full[:, -1]),
     "->",
     len(np.unique(full[:, -1])),
     "가지",
-)
+)  # [0. 1.] → 파일에는 '정수'이지만 '소수'로 읽어온 것을 확인
 
 lab_0 = full[full[:, -1] == 0]
 lab_1 = full[full[:, -1] == 1]
@@ -116,13 +123,15 @@ print("판정 0(불량) 줄 수:", len(lab_0))
 print("합 : ", len(lab_0) + len(lab_1))
 
 # TODO ⑤ 측정 5열만 weld 로 읽고 shape 와 cols 를 찍으세요
+print()
 
 weld = np.loadtxt(
     WELD, delimiter=",", skiprows=1, usecols=(0, 1, 2, 3, 4), encoding="utf-8-sig"
 )
+cols = head[:5]
 # print("weld : ", weld)
 print("shape", weld.shape)
-print("열 이름:", head[:5])
+print("열 이름:", cols)
 
 # =====================================================================
 # 실습 2 — 자료형 함정 두 개를 진짜 데이터에서
@@ -173,16 +182,19 @@ print("=" * 60)
 print("[실습 2] 자료형 함정 두 개를 진짜 데이터에서")
 
 # TODO ① 판정을 정수(lab_i)로 바꾸고 전·후의 앞 5개와 dtype 을 찍으세요
+print()
 
 lab_i = full[:, -1]
-print("판정 전 앞 5개:", lab_i[:5], "dtype", lab_i.dtype)
+print("앞 5개:", lab_i[:5], "dtype", lab_i.dtype)
 
 lab_i = lab_i.astype(int)
-print("판정 전 앞 5개:", lab_i[:5], "dtype", lab_i.dtype)
+print("변경 후 앞 5개:", lab_i[:5], "dtype", lab_i.dtype)
 
 print("원본 판정 dtype:", full[:, -1].dtype)
 
 # TODO ② kc 를 만들고 버림·반올림 앞 5개, 다른 칸 수, 세 평균을 찍으세요
+print()
+
 kc = full[:, 3] / 1000
 print("kc 앞 5개:", kc[:5])
 print("버림 앞 5개:", kc.astype(int)[:5])
@@ -197,6 +209,8 @@ print(
     round(np.round(kc).mean(), 3),
 )
 # TODO ③ np.arange 그릇과 np.zeros 그릇에 kc[0] 을 넣고 찍으세요
+print()
+
 seq_ar = np.arange(3)
 seq_zero = np.zeros(3)
 seq_ar[0] = kc[0]
@@ -206,7 +220,7 @@ print(
     seq_ar,
     "np.zeros 그릇:",
     seq_zero,
-)
+)  # arange : [5 1 2], zeros : [5.975 0.    0.   ] → 값을 담기 위해서는 zoros로 만들어야 함
 
 # =====================================================================
 # 실습 3 — 칸 꺼내기와 모양 바꾸기
@@ -253,17 +267,26 @@ print("=" * 60)
 print("[실습 3] 칸 꺼내기와 모양 바꾸기")
 
 # TODO ① 첫 줄·마지막 줄·첫 줄 가압력·가압력 앞 5개·40줄마다 한 줄을 찍으세요
+print()
+
 print("첫 줄:", weld[0])
 print("마지막 줄:", weld[-1])
 print("첫 줄 가압력:", weld[0, 4])
 print("가압력 앞 5개:", weld[:5, 4])
+print("40줄마다 한 줄씩 : ", weld[::40])
 
 # TODO ② 판정을 18 x 9 로 접어 찍고, 펼쳐서 원본과 같은지 찍으세요
+print()
+# *** reshape는 계산뿐만 아니라 보는 방법을 바꾸는 도구
 folded = lab_i.reshape(18, 9)
 print("folded 판정:\n", folded)
-print("펼치면:", np.array_equal(folded.flatten(), lab_i))
+
+# *** 배열 비교
+print("펼치면:", np.array_equal(folded.flatten(), lab_i))  # True
 
 # TODO ③ 오류 두 개를 받아 찍고, weld[150:200] 의 shape 를 찍으세요
+print()
+
 try:
     weld[162, 0]
 except IndexError as e:
@@ -320,9 +343,13 @@ print("=" * 60)
 print("[실습 4] 브로드캐스팅으로 자 하나에 올리기")
 
 # TODO ① 통전전류를 0~1 로 옮기고 앞 5개·최소·최대·개수를 찍으세요
+print()
+
 tc = weld[:, 3]
 tc_min = tc.min()
 tc_max = tc.max()
+
+# *** 최소-최대 정규화
 min_max_normalized = (tc - tc_min) / (tc_max - tc_min)
 
 print("원래:", tc[:5], "→", np.round(min_max_normalized[:5], 2))
@@ -333,10 +360,14 @@ print(
     min_max_normalized.max(),
     "/ 개수:",
     len(min_max_normalized),
-)
+)  # 최소: 0.0 / 최대: 1.0 / 개수: 162
 
 
 # TODO ② 표준화한 z 를 만들고 앞 5개와 z 의 평균·표준편차를 찍으세요
+print()
+
+# *** 표준화 : 평균 0, 표준편차 1
+# '평균에서 표준편차 몇 개만큼 떨어졌나'를 뜻함
 z = (tc - tc.mean()) / tc.std()
 print(
     "앞 5개 : ",
@@ -345,9 +376,14 @@ print(
     np.round(z.mean(), 2),
     "/ z의 표준편차 : ",
     z.std(),
-)
+)  # z의 평균 :  -0.0 / z의 표준편차 :  1.0 → -0.0는 0과 동일
 
 # TODO ③ 흔들림을 한 줄로 내고 표준편차와 나란히 찍으세요
+print()
+
+# *** 흔들림
+# 표준편차는 제곱을 사용하기 때문에 멀리 떨어진 값에 더 크게 반응
+# '흔들림'과 '표준편차'는 섞어 사용 안됨 → 보고서에는 무엇으로 측정했는지 반드시 작성하기
 print(
     "흔들림 :",
     round(np.abs(tc - tc.mean()).mean(), 2),
@@ -406,6 +442,7 @@ print("=" * 60)
 print("[실습 5] 라벨을 보지 않고 수상한 줄 찾기")
 
 # TODO ① k = 2, 3 으로 건수·줄 번호·불량/정상 건수·잡은 비율을 찍으세요
+print()
 
 for k in (2, 3):
     far = np.abs(z) > k
@@ -414,17 +451,24 @@ for k in (2, 3):
     good_count = (far & (lab_i == 1)).sum()
     total_bad = (lab_i == 0).sum()
     percentage_caught = (bad_count / total_bad * 100) if total_bad > 0 else 0
-
+    print("*" * 30)
     print(
         f"{k} 초과 {far.sum()}건 · 줄 번호 {far_indices} · 불량 {bad_count}건 / 정상 {good_count}건 · {percentage_caught:.1f}%"
     )
+    print("*" * 30)
+
 
 # TODO ② k = 2 로 잡힌 줄을 통째로 꺼내 앞 3줄을 찍으세요
+print()
 
 far = np.abs(z) > 2
 print(weld[far][:3])
 
 # TODO ③ 잡힌 줄과 나머지 줄의 가압력 평균, 줄 수 검산을 찍으세요
+print()
+
+# *** 잡힌 줄 가압력 평균 :  4965.0  / 나머지 :  9295.7
+#
 print(
     "잡힌 줄 가압력 평균 : ",
     round(weld[far][:, 4].mean(), 1),
@@ -491,6 +535,8 @@ print("=" * 60)
 print("[실습 6] 평균과 중앙값, 표준편차 두 개")
 
 # TODO ① 다섯 열의 평균·중앙값·표준편차·최소·최대를 한 줄씩 찍으세요
+print()
+
 for i in range(weld.shape[1]):
     c = weld[:, i]
     print(
@@ -498,6 +544,8 @@ for i in range(weld.shape[1]):
     )
 
 # TODO ② 가압력의 평균·중앙값, 작은 쪽·큰 쪽 5개, 평균보다 큰·작은 줄 수를 찍으세요
+print()
+
 wp = weld[:, 4]
 wp_sort = sorted(wp)
 print(
@@ -516,10 +564,14 @@ print(
 )
 
 # TODO ③ 가압력 표준편차를 두 가지로 찍으세요
+print()
+
 print(wp.std().round(4), "분모(162)")
 print(wp.std(ddof=1).round(4), "분모(161)")
 
 # TODO ④ 정상 줄만 골라 가압력 평균과 중앙값을 찍으세요
+print()
+
 bad = lab_i == 0
 
 print("정상줄만 : 평균 ", wp[~bad].mean().round(2), "/ 중앙값 : ", np.median(wp[~bad]))
@@ -577,6 +629,8 @@ print("=" * 60)
 print("[실습 7] axis 로 방향 정하기")
 
 # TODO ① axis=0, axis=1 평균의 개수와 값을 찍으세요
+print()
+
 col_sum = weld.mean(axis=0)
 line_sum = weld.mean(axis=1)
 print("axis=0의 개수 : ", len(col_sum), "개", "/ axis=1의 개수 : ", len(line_sum), "개")
@@ -589,9 +643,13 @@ for i in range(3):
     print(f"{line_sum[i]:>10.2f}")
 
 # TODO ② 첫 줄로 손 검산을 찍으세요
+print()
+
 print((weld[0, :5].sum() / 5).round(2) == line_sum[0].round(2))
 
 # TODO ③ 정상·불량 줄의 열별 평균과 차이를 한 줄씩 찍으세요
+print()
+
 good_m = weld[~bad].mean(axis=0)
 bad_m = weld[bad].mean(axis=0)
 
@@ -605,6 +663,8 @@ for i in range(weld.shape[1]):
         (good_m[i] - bad_m[i]).round(2),
     )
 # TODO ④ bad 를 18 x 9 로 접어 axis=1, axis=0 으로 각각 세고 합을 찍으세요
+print()
+
 re_bad = bad.reshape(18, 9)
 print(
     "axis = 1 : ",
@@ -655,6 +715,8 @@ print("=" * 60)
 print("[실습 8] 다섯 줄 보고서")
 
 # TODO ①~⑤ 다섯 줄을 f-string 으로 찍으세요
+print()
+
 print(
     f"1) 용접 {len(weld)}건 중 판정 0(불량)은 {bad.sum()}건 {bad.mean() * 100:.1f}% 입니다."
 )
